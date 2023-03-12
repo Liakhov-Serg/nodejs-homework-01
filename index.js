@@ -1,8 +1,3 @@
-// const listContacts = require("./db/listContacts");
-
-// module.exports = {
-//     listContacts
-// }
 const { program } = require("commander");
 
 const contacts = require("./contacts.js");
