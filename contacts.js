@@ -1,24 +1,46 @@
+const fs = require("fs/promises");
 const path = require("path");
+const { v4 } = require("uuid");
 
-/*
- * Розкоментуйте і запиши значення
- * const contactsPath = ;
- */
-// const contactsPath = path.join(__dirname, "./db/contacts.js")
+const contactsPath = path.join(__dirname, "./db/contacts.json");
+const updateContacts = async (contacts) => {
+  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+};
 
-// TODO: задокументувати кожну функцію
-function listContacts() {
-  // ...твій код
-}
+const listContacts = async () => {
+  const data = await fs.readFile(contactsPath);
+  return JSON.parse(data);
+};
 
-function getContactById(contactId) {
-  // ...твій код
-}
+const getContactById = async (id) => {
+  const contacts = await listContacts();
+  const contaktId = String(id);
+  const result = contacts.find((item) => item.id == contaktId);
+  return result || null;
+};
 
-function removeContact(contactId) {
-  // ...твій код
-}
+const addContact = async ({ name, email, phone }) => {
+  const contacts = await listContacts();
+  const newContact = { id: v4(), name, email, phone };
+  contacts.push(newContact);
+  await updateContacts(contacts);
+  return newContact;
+};
 
-function addContact(name, email, phone) {
-  // ...твій код
-}
+const removeContact = async (id) => {
+  const contacts = await listContacts();
+  const index = contacts.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return null;
+  }
+  const [result] = contacts.splice(index, 1);
+  await updateContacts(contacts);
+  return result;
+};
+
+module.exports = {
+  listContacts,
+  getContactById,
+  addContact,
+  removeContact,
+};
